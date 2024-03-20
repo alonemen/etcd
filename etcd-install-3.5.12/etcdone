@@ -1,0 +1,17 @@
+#!/bin/bash
+#Author: shunxiang cao
+#Organization: 云栖工程院
+
+### 执行脚本
+
+case $1 in
+"-1" )
+  echo ">>> 开始准备Etcd集群"
+  ansible-playbook -i group_vars/hosts flow/c_fep-tls.yml && echo ">>> 准备完成: successful !!!"
+;;
+
+"-2" )
+  echo ">>> 开始安装Etcd集群"
+  ansible-playbook -i group_vars/hosts flow/c_fep-etcd.yml && echo ">>> 组件安装完成: successful !!!"
+;;
+esac

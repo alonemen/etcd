@@ -1,0 +1,29 @@
+#!/bin/bash
+#Author: shunxiang cao
+#Organization: 云栖工程院
+
+## 查看etcd集群状态
+ETCDCTL_API=3 {{ etcd_work_dir }}/bin/etcdctl \
+--cacert={{ etcd_work_dir }}/tls/etcd_ca.pem \
+--cert={{ etcd_work_dir }}/tls/etcd_server.pem \
+--key={{ etcd_work_dir }}/tls/etcd_server-key.pem \
+--endpoints={% for host in groups['etcd'] %}https://{{ hostvars[host].inventory_hostname }}:2379{% if not loop.last %},{% endif %}{% endfor %} \
+--write-out=table endpoint status
+
+## 查看etcd集群健康
+ETCDCTL_API=3 {{ etcd_work_dir }}/bin/etcdctl \
+--cacert={{ etcd_work_dir }}/tls/etcd_ca.pem \
+--cert={{ etcd_work_dir }}/tls/etcd_server.pem \
+--key={{ etcd_work_dir }}/tls/etcd_server-key.pem \
+--endpoints={% for host in groups['etcd'] %}https://{{ hostvars[host].inventory_hostname }}:2379{% if not loop.last %},{% endif %}{% endfor %} \
+--write-out=table endpoint health
+
+## 查看etcd成员信息
+ETCDCTL_API=3 {{ etcd_work_dir }}/bin/etcdctl \
+--cacert={{ etcd_work_dir }}/tls/etcd_ca.pem \
+--cert={{ etcd_work_dir }}/tls/etcd_server.pem \
+--key={{ etcd_work_dir }}/tls/etcd_server-key.pem \
+--endpoints={% for host in groups['etcd'] %}https://{{ hostvars[host].inventory_hostname }}:2379{% if not loop.last %},{% endif %}{% endfor %} \
+--write-out=table member list
+
+

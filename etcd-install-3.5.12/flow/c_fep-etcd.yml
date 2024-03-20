@@ -1,0 +1,13 @@
+---
+## Etcd集群部署
+
+## 将规划好的etcd节点的IP地址写到hosts清单的etcd目录里
+- name: 2.etcd 安装
+  gather_facts: false
+  vars_files:
+    - ../group_vars/all.yml
+  hosts:
+   - etcd
+  roles:
+    - ../roles/cd_etcd
+  tags: cd_etcd

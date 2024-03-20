@@ -1,0 +1,14 @@
+#!/bin/bash
+#Author: shunxiang cao
+#Organization: 云栖工程院
+
+##此脚本用于删除一直处于Terming状态的命名空间
+##使用方法: sh delete_ns.sh $1 ; 位置变量: $1  传入要删除的命名空间(namespace)
+
+ETCDCTL_API=3 {{ etcd_work_dir }}/bin/etcdctl \
+--cacert={{ etcd_work_dir }}/tls/etcd_ca.pem \
+--cert={{ etcd_work_dir }}/tls/etcd_server.pem \
+--key={{ etcd_work_dir }}/tls/etcd_server-key.pem \
+--endpoints={% for host in groups['etcd'] %}https://{{ hostvars[host].inventory_hostname }}:2379{% if not loop.last %},{% endif %}{% endfor %} \
+del /registry/namespaces/$1
+

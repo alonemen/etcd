@@ -1,0 +1,13 @@
+---
+## Etcd集群部署
+
+## 在当前主机的当前目录下生成etcd证书
+- name: 1.tls 证书
+  gather_facts: false
+  vars_files:
+    - ../group_vars/all.yml
+  hosts:
+    - localhost
+  roles:
+    - ../roles/cc_tls
+  tags: cc_tls

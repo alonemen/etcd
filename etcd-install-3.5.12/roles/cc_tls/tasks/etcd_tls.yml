@@ -1,0 +1,35 @@
+---
+## etcd tls
+
+- name: 获取Ansible工作目录
+  shell: pwd |sed 's/flow//'
+  register: root_dir
+- debug: var=root_dir.stdout
+
+- name: 创建etcd证书存放目录
+  file: dest={{ root_dir.stdout }}/tls/generate_etcd state=directory
+
+- name: 安装cfssl工具
+  copy: src=files/bin/{{ item }} dest=/usr/bin mode=0755
+  with_items:
+    - cfssl
+    - cfssljson
+    - cfssl-certinfo
+
+- name: 创建etcd证书请求文件
+  template: src=generate_etcd/{{ item }} dest={{ root_dir.stdout }}/tls/generate_etcd/{{ item.split('.')[:-1]|join('.') }}
+  with_items:
+    - etcd_ca-config.json.j2
+    - etcd_ca-csr.json.j2
+    - etcd_server-csr.json.j2
+
+- name: 准备生成etcd证书脚本
+  copy: src=scripts/generate_etcd_cert.sh dest={{ root_dir.stdout }}/tls/generate_etcd mode=0755
+
+- name: 生成etcd证书文件
+  shell: cd {{ root_dir.stdout }}/tls/generate_etcd && /bin/bash generate_etcd_cert.sh
+
+- name: 拷贝到使用证书的roles下
+  copy: src={{ root_dir.stdout }}/tls/generate_etcd/ dest={{ root_dir.stdout }}/roles/{{ item }}
+  with_items:
+    - cd_etcd/files/tls/etcd_cert

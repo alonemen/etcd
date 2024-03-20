@@ -1,0 +1,12 @@
+## ETCD工作目录(默认)
+##
+etcd_work_dir: '/datadisk/etcd'
+
+## 自签证书可信任IP列表，为方便扩展，可添加多个预留IP
+##
+cert_hosts:
+  ## 包含所有etcd节点IP
+  etcd:
+  ## 按照下面格式填写IP地址
+    - 127.0.0.1
+    - 10.0.0.1

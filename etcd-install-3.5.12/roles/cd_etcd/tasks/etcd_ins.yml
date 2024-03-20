@@ -1,0 +1,48 @@
+---
+## ectd安装剧本
+
+- name: 创建etcd工作目录
+  file: path={{ etcd_work_dir }}/{{ item }} state=directory
+  with_items:
+    - bin
+    - cfg
+    - tls
+
+- name: 拷贝etcd命令
+  copy: src=files/bin/{{ item }} dest={{ etcd_work_dir }}/bin/ mode=0755
+  with_items:
+    - etcd
+    - etcdctl
+    - etcdutl
+
+- name: 拷贝etcd证书
+  copy: src=files/tls/etcd_cert/{{ item }} dest={{ etcd_work_dir }}/tls/ 
+  with_items:
+    - etcd_ca.pem
+    - etcd_ca-key.pem
+    - etcd_server.pem
+    - etcd_server-key.pem
+  tags: etcd-tls
+
+- name: 拷贝etcd配置文件
+  template: src=etcd.conf.j2 dest={{ etcd_work_dir }}/cfg/etcd.conf
+
+- name: 拷贝etcd启动文件
+  template: src=etcd.service.j2 dest=/usr/lib/systemd/system/etcd.service
+
+- name: 启动etcd服务
+  service: name=etcd state=restarted enabled=yes daemon_reload=yes
+
+- name: 拷贝etcd删除数据脚本(用于删除无法删除的k8s命名空间)
+  template: src=delete-ns.sh.j2 dest={{ etcd_work_dir }}/bin/delete-ns.sh mode=0755
+
+- name: 拷贝etcd查看脚本
+  template: src=etcd-check.sh.j2 dest={{ etcd_work_dir }}/bin/etcd-check.sh mode=0755
+
+- name: 拷贝etcd备份脚本
+  template: src=etcd-backup.sh.j2 dest={{ etcd_work_dir }}/bin/etcd-backup.sh mode=0755
+
+- name: 获取etcd集群状态
+  shell: sh {{ etcd_work_dir }}/bin/etcd-check.sh
+  register: status
+- debug: var=status.stdout_lines

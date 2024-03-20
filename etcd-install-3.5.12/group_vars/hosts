@@ -1,0 +1,12 @@
+## 资源清单文件配置方法
+# 1. 根据资源规划,在以下资源组内填写
+
+## Etcd集群节点
+##
+[etcd]
+#eg: 127.0.0.1 etcd_name=etcd-1 ansible_ssh_user=root ansible_ssh_port=22
+
+## 需要初始化操作的节点(将所有ECS资源的IP地址加到组内)
+# eg: 127.0.0.1 ansible_ssh_user=root ansible_ssh_port=40022
+#[fep_nodes:children]
+#etcd
